@@ -85,13 +85,13 @@ export default function Dashboard(session) {
 	return (
 		<>
 			<Navigation />
-			<div className="container h-screen flex flex-col mx-auto bg-white dark:bg-stone-900 py-8 p-6 shadow-md">
+			<div className="container flex-1 flex flex-col mx-auto py-8 p-6 shadow-md">
 				<div className="flex justify-between items-center mb-4">
 					<h1 className="text-3xl text-black dark:text-white">
 						User Dashboard
 					</h1>
 					<button
-						className="bg-red-500 text-black dark:text-white p-2 rounded"
+						className="bg-red-500 text-white p-2 rounded"
 						onClick={() => signOut()}
 					>
 						<AiOutlineLogout />
@@ -115,7 +115,7 @@ export default function Dashboard(session) {
 									<td>{user.password}</td>
 									<td className="text-right">
 										<button
-											className="bg-blue-500 text-black dark:text-white mr-1 p-2 rounded"
+											className="bg-blue-500 text-white mr-1 p-2 rounded"
 											onClick={() => {
 												axios.get(`/api/user/${user.id}`).then((response) => {
 													const user = response.data
@@ -143,7 +143,7 @@ export default function Dashboard(session) {
 						</tbody>
 					</table>
 				</div>
-				<div className="flex justify-end mt-4">
+				<div className="flex justify-end mt-4 self-auto">
 					<button
 						className="bg-blue-500 text-white p-2 rounded"
 						onClick={() => setCreateMode(true)}
@@ -154,7 +154,7 @@ export default function Dashboard(session) {
 			</div>
 
 			{createMode && (
-				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50">
+				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50 text-gray-900">
 					<div className="container">
 						<div className="bg-white p-6 rounded shadow-md">
 							<h2 className="text-2xl mb-4">Create User</h2>
@@ -190,7 +190,10 @@ export default function Dashboard(session) {
 									<button
 										type="cancel"
 										className="bg-red-500 text-white p-2 rounded"
-										onClick={() => setCreateMode(false)}
+										onClick={() => {
+											setUser({})
+											setCreateMode(false)
+										}}
 									>
 										Cancel
 									</button>
@@ -209,7 +212,7 @@ export default function Dashboard(session) {
 			)}
 
 			{editMode && (
-				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50">
+				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50 text-gray-900">
 					<div className="container">
 						<div className="bg-white p-6 rounded shadow-md">
 							<h2 className="text-2xl mb-4">Edit User</h2>
@@ -245,7 +248,10 @@ export default function Dashboard(session) {
 									<button
 										type="cancel"
 										className="bg-red-500 text-white p-2 rounded"
-										onClick={() => setEditMode(false)}
+										onClick={() => {
+											setUser({})
+											setEditMode(false)
+										}}
 									>
 										Cancel
 									</button>
