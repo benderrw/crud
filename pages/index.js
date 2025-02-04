@@ -1,114 +1,284 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { getSession, signOut } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import axios from 'axios'
+import {
+	AiOutlineLogout,
+	AiFillEdit,
+	AiOutlineUserDelete
+} from 'react-icons/ai'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { showNotification } from './components/notification'
+import Navigation from './components/navigation'
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export default function Dashboard(session) {
+	const [users, setUsers] = useState([])
+	const [user, setUser] = useState({})
+	const [editMode, setEditMode] = useState(false)
+	const [createMode, setCreateMode] = useState(false)
 
-export default function Home() {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              pages/index.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+	const createUser = () => {
+		axios
+			.post('/api/users/', {
+				...user,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			})
+			.then((response) => {
+				showNotification(response.data.message, 'success')
+				setUsers((prevUsers) => [...prevUsers, { ...response.data.user }])
+				setUser({})
+				setCreateMode(false)
+			})
+			.catch((error) => {
+				showNotification(error.response.data.message, 'error')
+			})
+	}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	const updateUser = () => {
+		axios
+			.put(`/api/user/${user.id}`, {
+				...user,
+				updatedAt: new Date().toISOString()
+			})
+			.then((response) => {
+				showNotification(response.data.message, 'success')
+				setUsers((prevUsers) =>
+					prevUsers.map((user) =>
+						user.id === response.data.user.id
+							? { ...user, ...response.data.user }
+							: user
+					)
+				)
+				setUser({})
+				setEditMode(false)
+			})
+			.catch((error) => {
+				showNotification(error.response.data.message, 'error')
+			})
+	}
+
+	const deleteUser = (id) => {
+		axios
+			.delete(`/api/user/${id}`)
+			.then((response) => {
+				showNotification(response.data.message, 'success')
+				setUsers((prevUsers) =>
+					prevUsers.filter((user) => {
+						if (user.id !== id) return user
+					})
+				)
+			})
+			.catch((error) => {
+				showNotification(error.response.data.message, 'error')
+			})
+	}
+
+	useEffect(() => {
+		if (session) {
+			axios.get('/api/users').then((response) => setUsers(response.data))
+		}
+	}, [session])
+
+	if (!session) return <p>Access Denied</p>
+
+	return (
+		<>
+			<Navigation />
+			<div className="container h-screen flex flex-col mx-auto bg-white dark:bg-stone-900 py-8 p-6 shadow-md">
+				<div className="flex justify-between items-center mb-4">
+					<h1 className="text-3xl text-black dark:text-white">
+						User Dashboard
+					</h1>
+					<button
+						className="bg-red-500 text-black dark:text-white p-2 rounded"
+						onClick={() => signOut()}
+					>
+						<AiOutlineLogout />
+					</button>
+				</div>
+				<div className="mt-4 flex-1 overflow-y-auto">
+					<table className="table-auto w-full h-max text-black dark:text-white">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Email</th>
+								<th>Password</th>
+								<th className="text-right">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{users.map((user) => (
+								<tr key={user.id}>
+									<td>{user.name}</td>
+									<td>{user.email}</td>
+									<td>{user.password}</td>
+									<td className="text-right">
+										<button
+											className="bg-blue-500 text-black dark:text-white mr-1 p-2 rounded"
+											onClick={() => {
+												axios.get(`/api/user/${user.id}`).then((response) => {
+													const user = response.data
+													setUser({
+														id: user.id,
+														name: user.name,
+														email: user.email,
+														password: user.password
+													})
+													setEditMode(true)
+												})
+											}}
+										>
+											<AiFillEdit />
+										</button>
+										<button
+											className="bg-red-500 text-white p-2 rounded"
+											onClick={() => deleteUser(user.id)}
+										>
+											<AiOutlineUserDelete />
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+				<div className="flex justify-end mt-4">
+					<button
+						className="bg-blue-500 text-white p-2 rounded"
+						onClick={() => setCreateMode(true)}
+					>
+						Add User
+					</button>
+				</div>
+			</div>
+
+			{createMode && (
+				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50">
+					<div className="container">
+						<div className="bg-white p-6 rounded shadow-md">
+							<h2 className="text-2xl mb-4">Create User</h2>
+							<form className="flex flex-col">
+								<input
+									type="text"
+									placeholder="Nome"
+									className="border p-2 w-full mb-4"
+									value={user.name}
+									onChange={(e) => setUser({ ...user, name: e.target.value })}
+									required
+									autoFocus
+								/>
+								<input
+									type="email"
+									placeholder="Email"
+									className="border p-2 w-full mb-4"
+									value={user.email}
+									onChange={(e) => setUser({ ...user, email: e.target.value })}
+									required
+								/>
+								<input
+									type="text"
+									placeholder="Password"
+									className="border p-2 w-full mb-4"
+									value={user.password}
+									onChange={(e) =>
+										setUser({ ...user, password: e.target.value })
+									}
+									required
+								/>
+								<div className="flex justify-end">
+									<button
+										type="cancel"
+										className="bg-red-500 text-white p-2 rounded"
+										onClick={() => setCreateMode(false)}
+									>
+										Cancel
+									</button>
+									<button
+										type="submit"
+										className="bg-blue-500 text-white p-2 rounded ml-2"
+										onClick={(event) => event.preventDefault() || createUser()}
+									>
+										Create User
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{editMode && (
+				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50">
+					<div className="container">
+						<div className="bg-white p-6 rounded shadow-md">
+							<h2 className="text-2xl mb-4">Edit User</h2>
+							<form className="flex flex-col">
+								<input
+									type="text"
+									placeholder="Nome"
+									className="border p-2 w-full mb-4"
+									value={user.name}
+									onChange={(e) => setUser({ ...user, name: e.target.value })}
+									autoFocus
+									required
+								/>
+								<input
+									type="email"
+									placeholder="Email"
+									className="border p-2 w-full mb-4"
+									value={user.email}
+									onChange={(e) => setUser({ ...user, email: e.target.value })}
+									required
+								/>
+								<input
+									type="text"
+									placeholder="Password"
+									className="border p-2 w-full mb-4"
+									value={user.password}
+									onChange={(e) =>
+										setUser({ ...user, password: e.target.value })
+									}
+									required
+								/>
+								<div className="flex justify-end">
+									<button
+										type="cancel"
+										className="bg-red-500 text-white p-2 rounded"
+										onClick={() => setEditMode(false)}
+									>
+										Cancel
+									</button>
+									<button
+										type="submit"
+										className="bg-blue-500 text-white p-2 rounded ml-2"
+										onClick={(event) => event.preventDefault() || updateUser()}
+									>
+										Update User
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			)}
+
+			<ToastContainer />
+		</>
+	)
+}
+
+export async function getServerSideProps(context) {
+	const session = await getSession(context)
+
+	if (!session) {
+		return {
+			redirect: {
+				destination: '/login',
+				permanent: false
+			}
+		}
+	}
+
+	return { props: { session } }
 }
