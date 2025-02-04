@@ -1,4 +1,5 @@
 import { useTheme } from '../context/theme-context'
+import { MdDarkMode, MdLightMode } from 'react-icons/md'
 
 export default function () {
 	const { theme, toggleTheme } = useTheme()
@@ -8,9 +9,9 @@ export default function () {
 			<div className="container mx-auto flex justify-between">
 				<button
 					onClick={toggleTheme}
-					className="px-4 py-2 bg-blue-500 text-white rounded"
+					className="flex items-center gap-2 p-2 bg-blue-500 text-white rounded-full transition-all duration-300 hover:bg-blue-600"
 				>
-					Toggle Theme {theme}
+					{theme === 'dark' ? <MdLightMode /> : <MdDarkMode />}
 				</button>
 				<div>Component 2</div>
 			</div>
