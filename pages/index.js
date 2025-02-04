@@ -91,7 +91,7 @@ export default function Dashboard(session) {
 						User Dashboard
 					</h1>
 					<button
-						className="bg-red-500 text-white p-2 rounded"
+						className="bg-red-500 text-white p-2 rounded transition-all duration-300 hover:bg-red-600"
 						onClick={() => signOut()}
 					>
 						<AiOutlineLogout />
@@ -115,7 +115,7 @@ export default function Dashboard(session) {
 									<td>{user.password}</td>
 									<td className="text-right">
 										<button
-											className="bg-blue-500 text-white mr-1 p-2 rounded"
+											className="bg-blue-500 text-white mr-1 p-2 rounded transition-all duration-300 hover:bg-blue-600"
 											onClick={() => {
 												axios.get(`/api/user/${user.id}`).then((response) => {
 													const user = response.data
@@ -132,7 +132,7 @@ export default function Dashboard(session) {
 											<AiFillEdit />
 										</button>
 										<button
-											className="bg-red-500 text-white p-2 rounded"
+											className="bg-red-500 text-white p-2 rounded transition-all duration-300 hover:bg-red-600"
 											onClick={() => deleteUser(user.id)}
 										>
 											<AiOutlineUserDelete />
@@ -145,7 +145,7 @@ export default function Dashboard(session) {
 				</div>
 				<div className="flex justify-end mt-4 self-auto">
 					<button
-						className="bg-blue-500 text-white p-2 rounded"
+						className="bg-blue-500 text-white p-2 rounded transition-all duration-300 hover:bg-blue-600"
 						onClick={() => setCreateMode(true)}
 					>
 						Add User
@@ -154,11 +154,14 @@ export default function Dashboard(session) {
 			</div>
 
 			{createMode && (
-				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50 text-gray-900">
+				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 text-gray-900">
 					<div className="container">
 						<div className="bg-white p-6 rounded shadow-md">
 							<h2 className="text-2xl mb-4">Create User</h2>
-							<form className="flex flex-col">
+							<form
+								className="flex flex-col"
+								onSubmit={(event) => event.preventDefault() || createUser()}
+							>
 								<input
 									type="text"
 									placeholder="Nome"
@@ -177,7 +180,7 @@ export default function Dashboard(session) {
 									required
 								/>
 								<input
-									type="text"
+									type="password"
 									placeholder="Password"
 									className="border p-2 w-full mb-4"
 									value={user.password}
@@ -186,23 +189,22 @@ export default function Dashboard(session) {
 									}
 									required
 								/>
-								<div className="flex justify-end">
+								<div className="flex justify-start flex-row-reverse">
+									<button
+										type="submit"
+										className="bg-blue-500 text-white p-2 rounded ml-2 hover:bg-blue-600"
+									>
+										Create User
+									</button>
 									<button
 										type="cancel"
-										className="bg-red-500 text-white p-2 rounded"
+										className="bg-red-500 text-white p-2 rounded transition-all duration-300 hover:bg-red-600"
 										onClick={() => {
 											setUser({})
 											setCreateMode(false)
 										}}
 									>
 										Cancel
-									</button>
-									<button
-										type="submit"
-										className="bg-blue-500 text-white p-2 rounded ml-2"
-										onClick={(event) => event.preventDefault() || createUser()}
-									>
-										Create User
 									</button>
 								</div>
 							</form>
@@ -212,11 +214,14 @@ export default function Dashboard(session) {
 			)}
 
 			{editMode && (
-				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-500 bg-opacity-50 text-gray-900">
+				<div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 text-gray-900">
 					<div className="container">
 						<div className="bg-white p-6 rounded shadow-md">
 							<h2 className="text-2xl mb-4">Edit User</h2>
-							<form className="flex flex-col">
+							<form
+								className="flex flex-col"
+								onSubmit={(event) => event.preventDefault() || updateUser()}
+							>
 								<input
 									type="text"
 									placeholder="Nome"
@@ -235,7 +240,7 @@ export default function Dashboard(session) {
 									required
 								/>
 								<input
-									type="text"
+									type="password"
 									placeholder="Password"
 									className="border p-2 w-full mb-4"
 									value={user.password}
@@ -244,23 +249,22 @@ export default function Dashboard(session) {
 									}
 									required
 								/>
-								<div className="flex justify-end">
+								<div className="flex justify-start flex-row-reverse">
+									<button
+										type="submit"
+										className="bg-blue-500 text-white p-2 rounded ml-2 transition-all duration-300 hover:bg-blue-600"
+									>
+										Update User
+									</button>
 									<button
 										type="cancel"
-										className="bg-red-500 text-white p-2 rounded"
+										className="bg-red-500 text-white p-2 rounded transition-all duration-300 hover:bg-red-600"
 										onClick={() => {
 											setUser({})
 											setEditMode(false)
 										}}
 									>
 										Cancel
-									</button>
-									<button
-										type="submit"
-										className="bg-blue-500 text-white p-2 rounded ml-2"
-										onClick={(event) => event.preventDefault() || updateUser()}
-									>
-										Update User
 									</button>
 								</div>
 							</form>
