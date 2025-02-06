@@ -1,19 +1,26 @@
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getSession, signIn } from 'next-auth/react'
 import { useState } from 'react'
 
-import Navigation from './components/navigation'
+import Navigation from '../components/navigation'
 
 export default function Login() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
+	const router = useRouter()
+
 	const { t } = useTranslation('common')
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		await signIn('credentials', { email, password, callbackUrl: '/' })
+		await signIn('credentials', {
+			email,
+			password,
+			callbackUrl: `/${router.locale}`
+		})
 	}
 
 	return (

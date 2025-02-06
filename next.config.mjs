@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
+import i18n from './next-i18next.config.js'
+
 const nextConfig = {
-	i18n: {
-		defaultLocale: 'pt',
-		locales: ['en', 'pt']
-	},
+	...i18n,
 	reactStrictMode: true
 }
 

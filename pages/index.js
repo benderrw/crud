@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getSession, signOut } from 'next-auth/react'
@@ -11,8 +12,8 @@ import {
 } from 'react-icons/ai'
 import { ToastContainer } from 'react-toastify'
 
-import { showNotification } from './components/notification'
-import Navigation from './components/navigation'
+import showNotification from '../components/notification'
+import Navigation from '../components/navigation'
 
 export default function Dashboard(session) {
 	const [users, setUsers] = useState([])
@@ -20,6 +21,7 @@ export default function Dashboard(session) {
 	const [editMode, setEditMode] = useState(false)
 	const [createMode, setCreateMode] = useState(false)
 
+	const router = useRouter()
 	const { t } = useTranslation('common')
 
 	const createUser = () => {
@@ -97,7 +99,7 @@ export default function Dashboard(session) {
 					</h1>
 					<button
 						className="bg-red-500 text-white p-2 rounded transition-all duration-300 hover:bg-red-600"
-						onClick={() => signOut()}
+						onClick={() => signOut({ callbackUrl: `/${router.locale}/login` })}
 					>
 						<AiOutlineLogout />
 					</button>

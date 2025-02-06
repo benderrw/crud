@@ -1,4 +1,4 @@
-import { useTheme } from '../context/theme-context'
+import { useTheme } from '@/context/theme-context'
 import { MdDarkMode, MdLightMode } from 'react-icons/md'
 
 export default function () {

@@ -1,5 +1,5 @@
-import prisma from '../lib/prisma'
-import cors, { runMiddleware } from '../lib/cors'
+import prisma from '../../lib/prisma'
+import cors, { runMiddleware } from '../../lib/cors'
 // import bcrypt from 'bcryptjs'
 
 export default async function handler(req, res) {

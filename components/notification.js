@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify'
 
-export const showNotification = (message, type) => {
+export default (message, type) => {
 	const options = {
 		position: 'bottom-left',
 		autoClose: 3000,
