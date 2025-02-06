@@ -1,10 +1,15 @@
-import { signIn } from 'next-auth/react'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { getSession, signIn } from 'next-auth/react'
 import { useState } from 'react'
+
 import Navigation from './components/navigation'
 
 export default function Login() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
+
+	const { t } = useTranslation('common')
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
@@ -22,15 +27,16 @@ export default function Login() {
 					<h2 className="text-2xl mb-4">Login</h2>
 					<input
 						type="email"
-						placeholder="Email"
+						placeholder={t('user_dashboard.th_email')}
 						className="border p-2 w-full mb-4"
 						onChange={(e) => setEmail(e.target.value)}
 						value={email}
 						required
+						autoFocus
 					/>
 					<input
 						type="password"
-						placeholder="Password"
+						placeholder={t('user_dashboard.th_password')}
 						className="border p-2 w-full mb-4"
 						onChange={(e) => setPassword(e.target.value)}
 						value={password}
@@ -54,4 +60,23 @@ export default function Login() {
 			</div>
 		</>
 	)
+}
+
+export async function getServerSideProps(context) {
+	const session = await getSession(context)
+	const { locale } = context
+
+	if (session) {
+		return {
+			redirect: {
+				destination: '/'
+			}
+		}
+	}
+
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ['common']))
+		}
+	}
 }

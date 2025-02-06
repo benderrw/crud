@@ -1,7 +1,7 @@
 import { useTheme } from '../context/theme-context'
 
 const Layout = ({ children }) => {
-	const { theme, toggleTheme } = useTheme()
+	const { theme } = useTheme()
 
 	return (
 		<div className={theme === 'dark' ? 'dark' : ''}>

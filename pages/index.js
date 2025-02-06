@@ -1,12 +1,15 @@
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getSession, signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
-import { ToastContainer } from 'react-toastify'
+
 import axios from 'axios'
+import { useEffect, useState } from 'react'
 import {
 	AiOutlineLogout,
 	AiFillEdit,
 	AiOutlineUserDelete
 } from 'react-icons/ai'
+import { ToastContainer } from 'react-toastify'
 
 import { showNotification } from './components/notification'
 import Navigation from './components/navigation'
@@ -16,6 +19,8 @@ export default function Dashboard(session) {
 	const [user, setUser] = useState({})
 	const [editMode, setEditMode] = useState(false)
 	const [createMode, setCreateMode] = useState(false)
+
+	const { t } = useTranslation('common')
 
 	const createUser = () => {
 		axios
@@ -88,7 +93,7 @@ export default function Dashboard(session) {
 			<div className="container flex-1 flex flex-col mx-auto py-8 p-6 shadow-md">
 				<div className="flex justify-between items-center mb-4">
 					<h1 className="text-3xl text-black dark:text-white">
-						User Dashboard
+						{t('user_dashboard.title')}
 					</h1>
 					<button
 						className="bg-red-500 text-white p-2 rounded transition-all duration-300 hover:bg-red-600"
@@ -101,10 +106,10 @@ export default function Dashboard(session) {
 					<table className="table-auto w-full h-max text-black dark:text-white">
 						<thead>
 							<tr>
-								<th>Name</th>
-								<th>Email</th>
-								<th>Password</th>
-								<th className="text-right">Actions</th>
+								<th>{t('user_dashboard.th_name')}</th>
+								<th>{t('user_dashboard.th_email')}</th>
+								<th>{t('user_dashboard.th_password')}</th>
+								<th className="text-right">{t('user_dashboard.th_actions')}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -148,7 +153,7 @@ export default function Dashboard(session) {
 						className="bg-blue-500 text-white p-2 rounded transition-all duration-300 hover:bg-blue-600"
 						onClick={() => setCreateMode(true)}
 					>
-						Add User
+						{t('add_user_button')}
 					</button>
 				</div>
 			</div>
@@ -280,6 +285,7 @@ export default function Dashboard(session) {
 
 export async function getServerSideProps(context) {
 	const session = await getSession(context)
+	const { locale } = context
 
 	if (!session) {
 		return {
@@ -290,5 +296,10 @@ export async function getServerSideProps(context) {
 		}
 	}
 
-	return { props: { session } }
+	return {
+		props: {
+			session,
+			...(await serverSideTranslations(locale, ['common']))
+		}
+	}
 }

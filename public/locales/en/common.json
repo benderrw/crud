@@ -1,0 +1,11 @@
+{
+	"change_language": "Change language",
+	"user_dashboard": {
+		"title": "User dashboard",
+		"th_name": "Name",
+		"th_email": "Email",
+		"th_password": "Password",
+		"th_actions": "Actions"
+	},
+	"add_user_button": "Add user"
+}

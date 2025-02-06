@@ -1,12 +1,10 @@
 import '@/styles/globals.css'
+import { appWithTranslation } from 'next-i18next'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from './context/theme-context'
 import Layout from './components/layout'
 
-export default function App({
-	Component,
-	pageProps: { session, ...pageProps }
-}) {
+const App = ({ Component, pageProps: { session, ...pageProps } }) => {
 	return (
 		<ThemeProvider>
 			<Layout>
@@ -17,3 +15,5 @@ export default function App({
 		</ThemeProvider>
 	)
 }
+
+export default appWithTranslation(App)

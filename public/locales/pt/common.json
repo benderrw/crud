@@ -1,0 +1,11 @@
+{
+	"change_language": "Mudar idioma",
+	"user_dashboard": {
+		"title": "Painel do usuário",
+		"th_name": "Nome",
+		"th_email": "E-mail",
+		"th_password": "Senha",
+		"th_actions": "Ações"
+	},
+	"add_user_button": "Adicionar usuário"
+}
